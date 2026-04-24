@@ -38,10 +38,15 @@
     --subtab-active-text: #e8f0fe;
     --section-bg:   #0c1828;
     --arrow-color:  #4da3f5;
+    --tag-zonawifi-bg: #1a3a2a;
+    --tag-zonawifi-text: #6ee7b7;
+    --tag-hogares-bg: #3a2a4a;
+    --tag-hogares-text: #c4b5fd;
+    --tag-ptp-bg: #2a3a4a;
+    --tag-ptp-text: #93c5fd;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
-
   body { background: var(--bg-page); color: var(--text-main); min-height: 100vh; }
 
   header {
@@ -75,7 +80,6 @@
 
   .torre-content { display: none; }
   .torre-content.active { display: block; }
-
   .container { max-width: 1400px; margin: 0 auto; padding: 1.25rem; }
 
   .search-wrap { margin-bottom: 1.25rem; position: relative; }
@@ -113,7 +117,13 @@
   .mkt-card:hover { border-color: var(--border-mid); }
   .mkt-header { display: flex; justify-content: space-between; align-items: flex-start; }
   .mkt-name { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-bright); letter-spacing: 0.02em; }
-  .g2-tag { background: var(--tag-g2-bg); color: var(--tag-g2-text); font-size: 0.62rem; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; border: 1px solid rgba(165,180,252,0.2); }
+  .g2-tag, .grupo-tag { 
+    font-size: 0.62rem; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; border: 1px solid rgba(165,180,252,0.2);
+  }
+  .g2-tag { background: var(--tag-g2-bg); color: var(--tag-g2-text); }
+  .grupo-tag.zonawifi { background: var(--tag-zonawifi-bg); color: var(--tag-zonawifi-text); border-color: rgba(110,231,183,0.3); }
+  .grupo-tag.hogares { background: var(--tag-hogares-bg); color: var(--tag-hogares-text); border-color: rgba(196,181,253,0.3); }
+  .grupo-tag.ptp { background: var(--tag-ptp-bg); color: var(--tag-ptp-text); border-color: rgba(147,197,253,0.3); }
 
   .ip-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -157,7 +167,6 @@
     white-space: pre-wrap; word-break: break-word; line-height: 1.5;
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
   }
-
   .hidden { display: none !important; }
   @keyframes fadeUp { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
   @media(max-width: 640px) {
@@ -174,6 +183,7 @@
   <div class="tabs">
     <button class="tab active" onclick="switchSite('g1', this)">Guajira I</button>
     <button class="tab" onclick="switchSite('g2', this)">Guajira II</button>
+    <button class="tab" onclick="switchSite('antena-remota', this)">📡 Antena Remota</button>
   </div>
 </header>
 
@@ -201,9 +211,17 @@
     <div id="torre-ricu132" class="torre-content"></div>
     <div id="torre-core" class="torre-content"></div>
   </div>
+
+  <div id="content-antena-remota" class="hidden">
+    <div class="sub-tabs-container">
+      <div class="sub-tabs" id="antena-remota-subtabs"></div>
+    </div>
+    <div id="antena-remota-content"></div>
+  </div>
 </div>
 
 <script>
+// === DATOS GUAJIRA I ===
 const dataG1 = [
   { title: "Nodo Primario", items: [
     { name: "MKT-PRIMARIO", ip: "192.168.90.1", desc: "CCR1072" },
@@ -234,6 +252,7 @@ const dataG1 = [
   ]}
 ];
 
+// === DATOS GUAJIRA II - COMPLETOS ===
 const torreRima51 = [
   { title: "📡 Antenas", items: [
     { name: "SECT-1 (CAPECHIRAPU |JASAISHIAO |PIYULACHON |IRRUWANALY |PULITCHAMANA |JESOMANA |MANATU |JIRRAWAIKAT)", ip: "172.16.51.2", desc: "Antena Sectorial 1" },
@@ -365,6 +384,111 @@ const torreCore = [
   ]}
 ];
 
+// === DATOS ANTENA REMOTA ===
+const antenaRemotaData = [
+  { title: "📡 RICU132_SECT-1", items: [
+    { name: "PAC_NAZARETH_132", ip: "172.16.132.15", grupo: "ZonaWifi", fileName: "RICU132_SECT-1" },
+    { name: "CC_ISLA_132", ip: "172.16.132.11", grupo: "HOGARES", fileName: "RICU132_SECT-1" }
+  ]},
+  { title: "📡 RICU132_SECT-2", items: [
+    { name: "PAC_SINAMAIKA", ip: "172.16.132.31", grupo: "ZonaWifi", fileName: "RICU132_SECT-2" },
+    { name: "PAC_KURILLAMANA_132", ip: "172.16.132.29", grupo: "ZonaWifi", fileName: "RICU132_SECT-2" },
+    { name: "PAC_KANEWAKAT_132", ip: "172.16.132.19", grupo: "ZonaWifi", fileName: "RICU132_SECT-2" },
+    { name: "CC_KOLOYOSU_132", ip: "172.16.132.23", grupo: "HOGARES", fileName: "RICU132_SECT-2" },
+    { name: "PAC_WARALAMAANA_132", ip: "172.16.132.35", grupo: "ZonaWifi", fileName: "RICU132_SECT-2" },
+    { name: "PAC_KACHARELOY_132", ip: "172.16.132.27", grupo: "ZonaWifi", fileName: "RICU132_SECT-2" },
+    { name: "PAC_TOURETAKAK_132", ip: "172.16.132.21", grupo: "ZonaWifi", fileName: "RICU132_SECT-2" }
+  ]},
+  { title: "📡 RICU46_SECT-1", items: [
+    { name: "PAC_UCA_SABANA_B_46", ip: "172.16.46.17", grupo: "ZonaWifi", fileName: "RICU46_SECT-1" },
+    { name: "PAC_MOJAN_46", ip: "172.16.46.23", grupo: "ZonaWifi", fileName: "RICU46_SECT-1" }
+  ]},
+  { title: "📡 RICU46_SECT-2", items: [
+    { name: "PAC_KAYUICHIS_46", ip: "172.16.46.19", grupo: "ZonaWifi", fileName: "RICU46_SECT-2" },
+    { name: "PAC_SOLOVITA_46", ip: "172.16.46.25", grupo: "ZonaWifi", fileName: "RICU46_SECT-2" },
+    { name: "PAC_MONTANITA_46", ip: "172.16.46.11", grupo: "ZonaWifi", fileName: "RICU46_SECT-2" },
+    { name: "PAC_LIMONAL_46", ip: "172.16.46.13", grupo: "ZonaWifi", fileName: "RICU46_SECT-2" },
+    { name: "PAC_MARIA_ANGOLA_46", ip: "172.16.46.21", grupo: "ZonaWifi", fileName: "RICU46_SECT-2" },
+    { name: "PAC_UCA_VILLA_JULIA_46", ip: "172.16.46.27", grupo: "ZonaWifi", fileName: "RICU46_SECT-2" }
+  ]},
+  { title: "📡 RIMA170-1_SECT-1", items: [
+    { name: "PAC_JEPCHON_170", ip: "172.16.170.37", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-1" },
+    { name: "PAC_KULINACHI_170", ip: "172.16.170.47", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-1" }
+  ]},
+  { title: "📡 RIMA170-1_SECT-2", items: [
+    { name: "CC_KALENTISUMANA_170", ip: "172.16.170.19", grupo: "HOGARES", fileName: "RIMA170-1_SECT-2" },
+    { name: "PAC_PESUAPA_170", ip: "172.16.170.55", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-2" }
+  ]},
+  { title: "📡 RIMA170-1_SECT-3", items: [
+    { name: "PAC_WARAWUARAO_170-1", ip: "172.16.170.57", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-3" },
+    { name: "PAC_SHAIN_170-1", ip: "172.16.170.51", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-3" },
+    { name: "PAC_SANTANA_170-1", ip: "172.16.170.53", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-3" },
+    { name: "PAC_MUSAMANA_170-1", ip: "172.16.170.59", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-3" },
+    { name: "PAC_MOUWASIRA_170-1", ip: "172.16.170.49", grupo: "ZonaWifi", fileName: "RIMA170-1_SECT-3" }
+  ]},
+  { title: "📡 RIMA170_SECT-1", items: [
+    { name: "PAC_KASUMANA_170", ip: "172.16.170.31", grupo: "ZonaWifi", fileName: "RIMA170_SECT-1" }
+  ]},
+  { title: "📡 RIMA170_SECT-2", items: [
+    { name: "CC_MASHOU2_170", ip: "172.16.170.15", grupo: "HOGARES", fileName: "RIMA170_SECT-2" },
+    { name: "CC_SAN NICOLAS_170", ip: "172.16.170.27", grupo: "HOGARES", fileName: "RIMA170_SECT-2" },
+    { name: "CC_ISHAPA_170", ip: "172.16.170.17", grupo: "HOGARES", fileName: "RIMA170_SECT-2" },
+    { name: "CC_YOSURU_170", ip: "172.16.170.29", grupo: "HOGARES", fileName: "RIMA170_SECT-2" },
+    { name: "CC_EL_CORAL_170", ip: "172.16.170.13", grupo: "HOGARES", fileName: "RIMA170_SECT-2" },
+    { name: "CC_MASHOU_170", ip: "172.16.170.21", grupo: "HOGARES", fileName: "RIMA170_SECT-2" },
+    { name: "PAC_CUTANAMANA", ip: "172.16.170.35", grupo: "ZonaWifi", fileName: "RIMA170_SECT-2" },
+    { name: "CC_TALOHUMANA_170", ip: "172.16.170.11", grupo: "HOGARES", fileName: "RIMA170_SECT-2" }
+  ]},
+  { title: "📡 RIMA170_SECT-3", items: [
+    { name: "PAC_MIRAFLORES_170", ip: "172.16.170.41", grupo: "ZonaWifi", fileName: "RIMA170_SECT-3" },
+    { name: "PAC_LOMAFRESCA_170", ip: "172.16.170.39", grupo: "ZonaWifi", fileName: "RIMA170_SECT-3" },
+    { name: "CC_WASHINGTON_170", ip: "172.16.170.25", grupo: "HOGARES", fileName: "RIMA170_SECT-3" },
+    { name: "CC_PALASUMANA_170", ip: "172.16.170.23", grupo: "HOGARES", fileName: "RIMA170_SECT-3" }
+  ]},
+  { title: "📡 RIMA170_SECT-4", items: [
+    { name: "PAC_LA_CRUZ_170", ip: "172.16.170.33", grupo: "ZonaWifi", fileName: "RIMA170_SECT-4" },
+    { name: "PAC_OLONOKIAO_170", ip: "172.16.170.43", grupo: "ZonaWifi", fileName: "RIMA170_SECT-4" }
+  ]},
+  { title: "📡 RIMA51_SECT-1", items: [
+    { name: "PAC_MANATU_51", ip: "172.16.51.31", grupo: "ZonaWifi", fileName: "RIMA51_SECT-1" },
+    { name: "PAC_JESOMANA_51", ip: "172.16.51.21", grupo: "ZonaWifi", fileName: "RIMA51_SECT-1" },
+    { name: "PAC_PIYULACHON_51", ip: "172.16.51.19", grupo: "ZonaWifi", fileName: "RIMA51_SECT-1" },
+    { name: "PAC_JIRRAWAIKAT_51", ip: "172.16.51.35", grupo: "ZonaWifi", fileName: "RIMA51_SECT-1" },
+    { name: "PAC_CAPECHIRAPU_51", ip: "172.16.51.33", grupo: "ZonaWifi", fileName: "RIMA51_SECT-1" },
+    { name: "CC_PULITCHAMANA_51", ip: "172.16.51.15", grupo: "HOGARES", fileName: "RIMA51_SECT-1" },
+    { name: "PAC_IRRUWUANALY_51", ip: "172.16.51.23", grupo: "ZonaWifi", fileName: "RIMA51_SECT-1" },
+    { name: "CC_JASAISHIAO_51", ip: "172.16.51.13", grupo: "HOGARES", fileName: "RIMA51_SECT-1" }
+  ]},
+  { title: "📡 RIMA51_SECT-2", items: [
+    { name: "PAC_BELEN_51", ip: "172.16.51.29", grupo: "ZonaWifi", fileName: "RIMA51_SECT-2" },
+    { name: "PAC_YARETSHIKAL_51", ip: "172.16.51.25", grupo: "ZonaWifi", fileName: "RIMA51_SECT-2" },
+    { name: "CC_JUTPUNARE_51", ip: "172.16.51.11", grupo: "HOGARES", fileName: "RIMA51_SECT-2" },
+    { name: "PAC_TABLAZO_51", ip: "172.16.51.17", grupo: "ZonaWifi", fileName: "RIMA51_SECT-2" },
+    { name: "PAC_URRAICHI_51", ip: "172.16.51.27", grupo: "ZonaWifi", fileName: "RIMA51_SECT-2" }
+  ]},
+  { title: "🔗 RICU46_PTP-1", items: [
+    { name: "PAC_PARAISO_46", ip: "172.16.46.15", grupo: "ZonaWifi", fileName: "RICU46_PTP-1" },
+    { name: "RICU46_PTP-1", ip: "172.16.46.4", grupo: "PTP-1", fileName: "RICU46_PTP-1" }
+  ]},
+  { title: "🔗 RICU132_PTP-1", items: [
+    { name: "PAC_MANAMON_132", ip: "172.16.132.13", grupo: "ZonaWifi", fileName: "RICU132_PTP-1" },
+    { name: "RICU132_PTP-1", ip: "172.16.132.4", grupo: "PTP-1", fileName: "RICU132_PTP-1" }
+  ]},
+  { title: "🔗 RICU132_PTP-2", items: [
+    { name: "PAC_ULUMACHIMANA", ip: "172.16.132.101", grupo: "ZonaWifi", fileName: "RICU132_PTP-2" },
+    { name: "PAC_SINAMAIKA", ip: "172.16.132.5", grupo: "ZonaWifi", fileName: "RICU132_PTP-2" }
+  ]},
+  { title: "🔗 RICU132_PTP-3", items: [
+    { name: "PAC_ULUMACHIMANA", ip: "172.16.132.6", grupo: "ZonaWifi", fileName: "RICU132_PTP-3" },
+    { name: "PAC_JAIMANA", ip: "172.16.132.102", grupo: "ZonaWifi", fileName: "RICU132_PTP-3" }
+  ]},
+  { title: "🔗 RICU132_PTP-4", items: [
+    { name: "PAC_KACHARELAY", ip: "172.16.132.7", grupo: "ZonaWifi", fileName: "RICU132_PTP-4" },
+    { name: "PAC_LIMASIRA", ip: "172.16.132.25", grupo: "ZonaWifi", fileName: "RICU132_PTP-4" }
+  ]}
+];
+
+// === FUNCIONES COMUNES ===
 function extractSectorNames(nameStr) {
   const match = nameStr.match(/\(([^)]+)\)/);
   if (match) return match[1].replace(/\|/g, '\n• ').replace(/\/\s*/g, '\n• ');
@@ -380,13 +504,16 @@ function processSECTName(item) {
   return { ...item, displayName: item.name, hasTooltip: false };
 }
 
-function renderCard(item, isMkt) {
+function renderCard(item, isMkt, grupo = null) {
   const p = processSECTName(item);
-  if (isMkt) {
+  const grupoClass = grupo ? grupo.toLowerCase().replace(/\s+/g, '-') : '';
+  const grupoTag = grupo ? `<span class="grupo-tag ${grupoClass}">${grupo}</span>` : (isMkt ? '<span class="g2-tag">G2</span>' : '');
+  
+  if (isMkt || grupo) {
     return `<div class="mkt-card">
       <div class="mkt-header">
-        <span class="mkt-name${p.hasTooltip ? ' sect-name' : ''}"${p.hasTooltip ? ` data-tooltip="${p.tooltipContent.replace(/"/g,'&quot;')}"` : ''}>${p.displayName}</span>
-        <span class="g2-tag">G2</span>
+        <span class="mkt-name${p.hasTooltip ? ' sect-name' : ''}"${p.hasTooltip ? ` data-tooltip="${p.tooltipContent?.replace(/"/g,'&quot;')||''}"` : ''}>${p.displayName}</span>
+        ${grupoTag}
       </div>
       <div class="ip-row">
         <div class="ip-text">📍 ${item.ip}</div>
@@ -396,7 +523,7 @@ function renderCard(item, isMkt) {
     </div>`;
   }
   return `<div class="std-card">
-    <div class="std-name${p.hasTooltip ? ' sect-name' : ''}"${p.hasTooltip ? ` data-tooltip="${p.tooltipContent.replace(/"/g,'&quot;')}"` : ''}>${p.displayName}</div>
+    <div class="std-name${p.hasTooltip ? ' sect-name' : ''}"${p.hasTooltip ? ` data-tooltip="${p.tooltipContent?.replace(/"/g,'&quot;')||''}"` : ''}>${p.displayName}</div>
     <div class="std-ip">📍 ${item.ip}</div>
     ${item.desc ? `<div class="std-desc">${item.desc}</div>` : ''}
     <a href="http://${item.ip}" target="_blank" class="std-link">🌐 Abrir</a>
@@ -408,7 +535,7 @@ function renderSections(data, targetId, filter = '') {
   let html = '', hasResults = false;
   data.forEach(section => {
     const items = section.items.filter(i =>
-      i.name.toLowerCase().includes(filter) || i.ip.includes(filter) || (i.desc||'').toLowerCase().includes(filter)
+      i.name.toLowerCase().includes(filter) || i.ip.includes(filter) || (i.desc||i.grupo||'').toLowerCase().includes(filter)
     );
     if (items.length) {
       hasResults = true;
@@ -417,7 +544,7 @@ function renderSections(data, targetId, filter = '') {
           <span>${section.title}</span><span class="arrow">▼</span>
         </div>
         <div class="section-content"><div class="inner-grid">
-          ${items.map(i => renderCard(i, section.isMkt)).join('')}
+          ${items.map(i => renderCard(i, section.isMkt, i.grupo)).join('')}
         </div></div>
       </div>`;
     }
@@ -435,6 +562,71 @@ function renderAllTorres(filter = '') {
   renderSections(torreCore,    'torre-core',    filter);
 }
 
+// === FUNCIONES ANTENA REMOTA ===
+function getUniqueFileNames() {
+  const names = new Set();
+  antenaRemotaData.forEach(sec => {
+    sec.items.forEach(item => { if (item.fileName) names.add(item.fileName); });
+  });
+  return Array.from(names).sort();
+}
+
+function renderAntenaRemotaSubtabs() {
+  const container = document.getElementById('antena-remota-subtabs');
+  const fileNames = getUniqueFileNames();
+  let html = `<button class="sub-tab active" data-filter="all">📋 Todos</button>`;
+  fileNames.forEach(name => {
+    html += `<button class="sub-tab" data-filter="${name}">📡 ${name}</button>`;
+  });
+  container.innerHTML = html;
+  container.querySelectorAll('.sub-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      container.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.getAttribute('data-filter');
+      renderAntenaRemotaContent(filter, document.getElementById('search').value.toLowerCase());
+    });
+  });
+}
+
+function renderAntenaRemotaContent(fileNameFilter = 'all', searchFilter = '') {
+  const container = document.getElementById('antena-remota-content');
+  let filteredData = antenaRemotaData;
+  if (fileNameFilter !== 'all') {
+    filteredData = antenaRemotaData.map(sec => ({
+      ...sec, items: sec.items.filter(i => i.fileName === fileNameFilter)
+    })).filter(sec => sec.items.length > 0);
+  }
+  if (searchFilter) {
+    filteredData = filteredData.map(sec => ({
+      ...sec, items: sec.items.filter(i =>
+        i.name.toLowerCase().includes(searchFilter) || 
+        i.ip.includes(searchFilter) || 
+        (i.grupo||'').toLowerCase().includes(searchFilter)
+      )
+    })).filter(sec => sec.items.length > 0);
+  }
+  let html = '';
+  if (filteredData.length === 0) {
+    html = '<div style="text-align:center;padding:2.5rem;color:var(--text-muted);font-size:0.9rem">Sin resultados</div>';
+  } else {
+    filteredData.forEach(section => {
+      html += `<div class="section open">
+        <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>${section.title} <small style="color:var(--text-muted);font-weight:400">(${section.items.length})</small></span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="section-content"><div class="inner-grid">
+          ${section.items.map(i => renderCard(i, true, i.grupo)).join('')}
+        </div></div>
+      </div>`;
+    });
+  }
+  container.innerHTML = html;
+  initTooltips();
+}
+
+// === TOOLTIPS ===
 function initTooltips() {
   let activeTooltip = null;
   document.querySelectorAll('.sect-name').forEach(el => {
@@ -460,27 +652,43 @@ function initTooltips() {
   }
 }
 
+// === CAMBIO DE PESTAÑAS PRINCIPALES ===
 function switchSite(site, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   const filter = document.getElementById('search').value.toLowerCase();
+  
+  document.getElementById('content-g1').classList.add('hidden');
+  document.getElementById('content-g2').classList.add('hidden');
+  document.getElementById('content-antena-remota').classList.add('hidden');
+  
   if (site === 'g1') {
-    document.getElementById('content-g2').classList.add('hidden');
     document.getElementById('content-g1').classList.remove('hidden');
     renderSections(dataG1, 'content-g1', filter);
-  } else {
-    document.getElementById('content-g1').classList.add('hidden');
+  } else if (site === 'g2') {
     document.getElementById('content-g2').classList.remove('hidden');
     renderAllTorres(filter);
+  } else if (site === 'antena-remota') {
+    document.getElementById('content-antena-remota').classList.remove('hidden');
+    renderAntenaRemotaSubtabs();
+    renderAntenaRemotaContent('all', filter);
   }
 }
 
+// === BÚSQUEDA ===
 function handleSearch() {
   const val = document.getElementById('search').value.toLowerCase();
-  if (!document.getElementById('content-g1').classList.contains('hidden')) renderSections(dataG1, 'content-g1', val);
-  else renderAllTorres(val);
+  if (!document.getElementById('content-g1').classList.contains('hidden')) {
+    renderSections(dataG1, 'content-g1', val);
+  } else if (!document.getElementById('content-g2').classList.contains('hidden')) {
+    renderAllTorres(val);
+  } else if (!document.getElementById('content-antena-remota').classList.contains('hidden')) {
+    const activeFilter = document.querySelector('#antena-remota-subtabs .sub-tab.active')?.getAttribute('data-filter') || 'all';
+    renderAntenaRemotaContent(activeFilter, val);
+  }
 }
 
+// === COPIAR IP ===
 function copyToClipboard(text, btn) {
   navigator.clipboard.writeText(text);
   const orig = btn.innerText;
@@ -488,11 +696,12 @@ function copyToClipboard(text, btn) {
   setTimeout(() => btn.innerText = orig, 1500);
 }
 
+// === INICIALIZACIÓN SUBTABS GUAJIRA II ===
 function initSubTabs() {
-  document.querySelectorAll('.sub-tab').forEach(tab => {
+  document.querySelectorAll('#content-g2 .sub-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.torre-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('#content-g2 .sub-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#content-g2 .torre-content').forEach(c => c.classList.remove('active'));
       tab.classList.add('active');
       document.getElementById(tab.getAttribute('data-torre')).classList.add('active');
       renderAllTorres(document.getElementById('search').value.toLowerCase());
@@ -500,10 +709,14 @@ function initSubTabs() {
   });
 }
 
-renderSections(dataG1, 'content-g1');
-renderAllTorres('');
-document.getElementById('content-g2').classList.add('hidden');
-initSubTabs();
+// === INICIALIZACIÓN ===
+document.addEventListener('DOMContentLoaded', () => {
+  renderSections(dataG1, 'content-g1');
+  renderAllTorres('');
+  document.getElementById('content-g2').classList.add('hidden');
+  document.getElementById('content-antena-remota').classList.add('hidden');
+  initSubTabs();
+});
 </script>
 </body>
 </html>
